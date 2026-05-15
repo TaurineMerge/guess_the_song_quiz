@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
+import { usersSchema } from 'src/users/schema';
 
 const DRIZZLE = Symbol('DRIZZLE');
 export const drizzleProvider = {
@@ -11,7 +12,7 @@ export const drizzleProvider = {
     });
 
     return drizzle(pool, {
-      schema: {},
+      schema: { ...usersSchema },
     });
   },
   inject: [ConfigService],
