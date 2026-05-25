@@ -1,6 +1,11 @@
-import { UsersBaseDto } from 'src/common/dto/users-base.dto';
-import { PartialType, PickType } from '@nestjs/swagger';
+import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 
-export class UpdateUserDto extends PartialType(
-  PickType(UsersBaseDto, ['username', 'email']),
-) {}
+export class UpdateUserDto {
+  @IsString()
+  @MinLength(3)
+  username: string;
+
+  @IsEmail()
+  @IsOptional()
+  email: string;
+}
