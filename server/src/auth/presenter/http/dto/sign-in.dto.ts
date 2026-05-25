@@ -1,4 +1,11 @@
-import { PickType } from '@nestjs/swagger';
-import { UsersBaseDto } from 'src/common/dto/users-base.dto';
+import { IsEmail, IsOptional, MinLength } from 'class-validator';
 
-export class SignInDto extends PickType(UsersBaseDto, ['email', 'password']) {}
+export class SignInDto {
+  @IsEmail()
+  @IsOptional()
+  email: string;
+
+  @MinLength(6)
+  @IsOptional()
+  password: string;
+}
