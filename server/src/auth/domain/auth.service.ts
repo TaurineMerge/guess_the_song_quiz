@@ -1,5 +1,5 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { PasswordHasher } from '../ports/password-hasher.port';
+import { PasswordHasher } from './ports/password-hasher.port';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { type ConfigType } from '@nestjs/config';
 import { eq } from 'drizzle-orm';

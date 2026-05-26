@@ -1,4 +1,4 @@
-import { PasswordHasher } from 'src/auth/ports/password-hasher.port';
+import { PasswordHasher } from 'src/auth/domain/ports/password-hasher.port';
 import { hash, genSalt, compare } from 'bcrypt';
 
 export class BcryptPasswordHasher implements PasswordHasher {
