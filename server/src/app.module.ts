@@ -1,16 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './common/infrastructure/database/database.module';
-import { JwtModule } from '@nestjs/jwt';
-import jwtConfig from './common/infrastructure/config/jwt.config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    JwtModule.registerAsync(jwtConfig.asProvider()),
     DatabaseModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
