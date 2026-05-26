@@ -2,8 +2,11 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthService } from 'src/auth/domain/auth.service';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
 
-@Controller()
+@Auth(AuthType.None)
+@Controller('auth')
 export class AuthController {
   readonly #authService: AuthService;
 
