@@ -11,7 +11,6 @@ import { SignInDto } from '../presenter/http/dto/sign-in.dto';
 import { PgErrorMapper } from 'src/common/infrastructure/database/exceptions/pg-errors.mapper';
 import { users } from 'src/users/schema';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
-import { RefreshTokenDto } from '../presenter/http/dto/refresh-token.dto';
 
 type UserData = typeof users.$inferSelect;
 
@@ -71,11 +70,11 @@ export class AuthService {
     return await this.generateTokens(user);
   }
 
-  async refreshTokens(refreshTokenDto: RefreshTokenDto) {
+  async refreshTokens(refreshToken: string) {
     try {
       const { sub } = await this.jwtService.verifyAsync<
         Pick<JwtPayload, 'sub'>
-      >(refreshTokenDto.refreshToken, {
+      >(refreshToken, {
         secret: this.jwtConfiguration.secret,
         audience: this.jwtConfiguration.audience,
         issuer: this.jwtConfiguration.issuer,
@@ -90,6 +89,10 @@ export class AuthService {
         .from(users)
         .where(eq(users.userId, sub))
         .limit(1);
+
+      if (!user) {
+        throw new UnauthorizedException();
+      }
 
       return this.generateTokens(user);
     } catch {
