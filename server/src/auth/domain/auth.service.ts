@@ -10,6 +10,7 @@ import { SignUpDto } from '../presenter/http/dto/sign-up.dto';
 import { SignInDto } from '../presenter/http/dto/sign-in.dto';
 import { PgErrorMapper } from 'src/common/infrastructure/database/exceptions/pg-errors.mapper';
 import { users } from 'src/users/schema';
+import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -64,7 +65,7 @@ export class AuthService {
 
     if (!isEqual) throw new UnauthorizedException('Invalid credentials');
 
-    const jwtPayload = { sub: user.userId, email: user.email };
+    const jwtPayload: JwtPayload = { sub: user.userId, email: user.email };
     const jwtOptions: JwtSignOptions = {
       audience: this.jwtConfiguration.audience,
       issuer: this.jwtConfiguration.issuer,
