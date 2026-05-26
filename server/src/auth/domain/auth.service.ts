@@ -11,6 +11,9 @@ import { SignInDto } from '../presenter/http/dto/sign-in.dto';
 import { PgErrorMapper } from 'src/common/infrastructure/database/exceptions/pg-errors.mapper';
 import { users } from 'src/users/schema';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
+import { RefreshTokenDto } from '../presenter/http/dto/refresh-token.dto';
+
+type UserData = typeof users.$inferSelect;
 
 @Injectable()
 export class AuthService {
@@ -65,6 +68,36 @@ export class AuthService {
 
     if (!isEqual) throw new UnauthorizedException('Invalid credentials');
 
+    return await this.generateTokens(user);
+  }
+
+  async refreshTokens(refreshTokenDto: RefreshTokenDto) {
+    try {
+      const { sub } = await this.jwtService.verifyAsync<
+        Pick<JwtPayload, 'sub'>
+      >(refreshTokenDto.refreshToken, {
+        secret: this.jwtConfiguration.secret,
+        audience: this.jwtConfiguration.audience,
+        issuer: this.jwtConfiguration.issuer,
+      });
+      const [user] = await this.db
+        .select({
+          userId: users.userId,
+          email: users.email,
+          username: users.username,
+          passwordHash: users.passwordHash,
+        })
+        .from(users)
+        .where(eq(users.userId, sub))
+        .limit(1);
+
+      return this.generateTokens(user);
+    } catch {
+      throw new UnauthorizedException();
+    }
+  }
+
+  async generateTokens(user: UserData) {
     const [accessToken, refreshToken] = await Promise.all([
       this.signToken<Partial<JwtPayload>>(
         user.userId,
