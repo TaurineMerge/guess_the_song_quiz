@@ -3,7 +3,7 @@ import { PasswordHasher } from './ports/password-hasher.port';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { type ConfigType } from '@nestjs/config';
 import { eq } from 'drizzle-orm';
-import jwtConfig from 'src/common/infrastructure/config/jwt.config';
+import jwtConfig from 'src/auth/config/jwt.config';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DRIZZLE } from 'src/common/infrastructure/database/orm/drizzle.provider';
 import { SignUpDto } from '../presenter/http/dto/sign-up.dto';
@@ -65,16 +65,27 @@ export class AuthService {
 
     if (!isEqual) throw new UnauthorizedException('Invalid credentials');
 
-    const jwtPayload: JwtPayload = { sub: user.userId, email: user.email };
+    const [accessToken, refreshToken] = await Promise.all([
+      this.signToken<Partial<JwtPayload>>(
+        user.userId,
+        this.jwtConfiguration.accessTokenTtl,
+        { email: user.email },
+      ),
+      this.signToken(user.userId, this.jwtConfiguration.refreshTokenTtl),
+    ]);
+
+    return { accessToken, refreshToken };
+  }
+
+  private async signToken<T>(userId: string, expiresIn: number, payload?: T) {
+    const jwtPayload = { sub: userId, ...payload };
     const jwtOptions: JwtSignOptions = {
       audience: this.jwtConfiguration.audience,
       issuer: this.jwtConfiguration.issuer,
       secret: this.jwtConfiguration.secret,
-      expiresIn: this.jwtConfiguration.accessTokenTtl,
+      expiresIn,
     };
 
-    const accessToken = await this.jwtService.signAsync(jwtPayload, jwtOptions);
-
-    return { accessToken };
+    return await this.jwtService.signAsync(jwtPayload, jwtOptions);
   }
 }
