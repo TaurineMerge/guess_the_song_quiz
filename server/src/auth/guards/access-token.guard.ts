@@ -10,14 +10,14 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { REQUEST_USER_KEY } from 'src/auth/auth.constants';
 import { JwtPayload } from 'src/auth/interfaces/jwt-payload.interface';
-import jwtConfig from 'src/common/infrastructure/config/jwt.config';
+import jwtConfig from 'src/auth/config/jwt.config';
 import { AuthenticatedRequest } from '../interfaces/authenticated-request.interface';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    @Inject(jwtConfig)
+    @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
