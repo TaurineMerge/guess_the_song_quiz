@@ -105,7 +105,6 @@ export class AuthService {
       this.signToken<Partial<JwtPayload>>(
         user.userId,
         this.jwtConfiguration.accessTokenTtl,
-        { email: user.email },
       ),
       this.signToken(user.userId, this.jwtConfiguration.refreshTokenTtl),
     ]);
