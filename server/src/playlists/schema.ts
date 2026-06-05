@@ -20,6 +20,8 @@ export const playlists = pgTable('playlists', {
   title: varchar({ length: 255 }).notNull(),
 });
 
+const MAX_DURATION_SECONDS = 60 * 30; // 30 minutes
+
 export const playlistSongs = pgTable(
   'playlist_songs',
   {
@@ -41,6 +43,10 @@ export const playlistSongs = pgTable(
   },
   (table) => [
     check('duration_seconds_check', sql`${table.durationSeconds} > 0`),
+    check(
+      'duration_seconds_max_check',
+      sql`${table.durationSeconds} <= ${MAX_DURATION_SECONDS}`,
+    ),
     check('song_position_check', sql`${table.position} >= 0`),
     unique().on(table.playlistId, table.songLinkId),
   ],
