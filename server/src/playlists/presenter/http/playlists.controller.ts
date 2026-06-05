@@ -34,7 +34,7 @@ export class PlaylistsController {
   @Post('import')
   importPlaylist(
     @ActiveUser('sub') userId: string,
-    @Body() playlistId: string,
+    @Body('playlistId') playlistId: string,
   ) {
     return this.#playlistService.importPlaylist(userId, playlistId);
   }
