@@ -1,0 +1,92 @@
+.card {
+  margin-bottom: 8px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border-default, #3a3a3a);
+  border-radius: 8px;
+  background: var(--color-bg-surface, #1a1a1a);
+  color: var(--color-text-primary, #e8e8e8);
+  transition: border-color 0.15s ease;
+}
+
+.card:last-child {
+  margin-bottom: 0;
+}
+
+.card[data-status='wrong'] {
+  border-color: var(--color-danger, #e5484d);
+}
+
+.card[data-status='answering'] {
+  border-color: var(--color-accent, #3b9eff);
+}
+
+.card[data-status='correct'] {
+  border-color: var(--color-success, #30a46c);
+}
+
+.name {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.menuTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--color-border-default, #3a3a3a);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-secondary, #a8a8a8);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.menuTrigger:hover {
+  background: var(--color-bg-hover, #262626);
+}
+
+.menuContent {
+  min-width: 180px;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-default, #3a3a3a);
+  background: var(--color-bg-surface, #1a1a1a);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.menuItem {
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--color-text-secondary, #a8a8a8);
+  outline: none;
+  cursor: default;
+}
+
+.statusLabel {
+  position: absolute;
+  left: 100%;
+  margin-left: 8px;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.card[data-status='wrong'] .statusLabel {
+  color: var(--color-danger, #e5484d);
+}
+
+.card[data-status='answering'] .statusLabel {
+  color: var(--color-accent, #3b9eff);
+}
+
+.card[data-status='correct'] .statusLabel {
+  color: var(--color-success, #30a46c);
+}
