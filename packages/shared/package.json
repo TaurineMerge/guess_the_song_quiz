@@ -1,0 +1,15 @@
+{
+  "name": "shared",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./rooms/*": "./dist/rooms/*.js"
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}
