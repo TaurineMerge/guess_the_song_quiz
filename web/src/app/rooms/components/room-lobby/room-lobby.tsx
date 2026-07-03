@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
 import { AlertDialog } from "radix-ui";
-import {
-  createMockRoomState,
-  MOCK_CURRENT_USER_ID,
-} from "../../mocks/room.mock";
 import { useRoomStore } from "../../store/room-store";
 import { useSessionStore } from "../../store/session-store";
 import { PlayerCard } from "../player_card/player-card";
@@ -11,7 +7,10 @@ import { Visualizer } from "../visualizer/visualizer";
 import { AnswerButton } from "../answer_button/answer-button";
 import { AnswerInput } from "../answer_input/answer-input";
 import { YoutubePlayer } from "../youtube_player/youtube-player";
+import { socket } from "../../socket/client";
+import { roomClientEvents } from "shared/rooms/events/room-client-events";
 import styles from "./room-lobby.module.css";
+import { RoomEventHandler } from "../../socket/room-event-handler";
 
 export function RoomLobby() {
   const room = useRoomStore((state) => state.room);
@@ -19,34 +18,46 @@ export function RoomLobby() {
   const currentUserId = useSessionStore((state) => state.currentUserId);
   const setCurrentUserId = useSessionStore((state) => state.setCurrentUserId);
 
-  // Имитация того, что в реальности произойдёт при подключении к сокету:
-  // сервер присылает room_state, и мы один раз кладём его в стор.
-  // Когда появится socket.io-клиент, этот эффект заменится на socket.on('room_state', setRoomState)
-  // внутри сокет-провайдера — сам стор и компоненты ниже не изменятся.
   useEffect(() => {
-    setRoomState(createMockRoomState());
-    setCurrentUserId(MOCK_CURRENT_USER_ID);
+    setRoomState();
+    setCurrentUserId();
   }, [setRoomState, setCurrentUserId]);
 
-  // UI-стейт: показывать поле ввода или кнопку. Не часть RoomState,
-  // потому что это решение конкретного клиента, а не игровой стейт с сервера.
+  useEffect(() => {
+    socket.connect();
+
+    const handler = new RoomEventHandler(socket);
+
+    socket.once("connect", () => {
+      socket.emit(roomClientEvents.JOIN_ROOM, { roomId: room.roomId });
+      console.log("connected:", socket.id);
+    });
+
+    return () => {
+      socket.emit(roomClientEvents.LEAVE_ROOM);
+      handler.unregisterAll();
+      socket.disconnect();
+    };
+  }, []);
+
   const [isAnswering, setIsAnswering] = useState(false);
 
   const handleExit = () => {
-    // Здесь будет emit('leave_room') + переход на страницу со списком комнат.
-    console.log("leave_room (mock)");
+    console.log("leave_room");
+    socket.emit(roomClientEvents.LEAVE_ROOM);
   };
 
   const handleAnswerButtonClick = () => {
-    // Реальная логика: emit('submit_answer', { type: 'start' }) если нужно
-    // зафиксировать buzz до того, как игрок допечатает ответ (buzz mode).
-    // Пока просто открываем поле ввода.
+    socket.emit(roomClientEvents.ANSWER_LOCK);
     setIsAnswering(true);
   };
 
   const handleAnswerSubmit = (value: string) => {
-    // Здесь будет emit('submit_answer', { text: value }).
-    console.log("submit_answer (mock):", value);
+    if (!socket.connected) {
+      console.warn("socket not connected, cannot submit answer");
+      return;
+    }
+    socket.emit(roomClientEvents.SUBMIT_ANSWER, value);
     setIsAnswering(false);
   };
 
@@ -54,7 +65,6 @@ export function RoomLobby() {
     setIsAnswering(false);
   };
 
-  // room ещё не пришёл (аналог ожидания room_state после подключения к сокету)
   if (!room) {
     return <div className={styles.room}>Загрузка комнаты...</div>;
   }
@@ -65,7 +75,6 @@ export function RoomLobby() {
 
   return (
     <div className={styles.room}>
-      {/* Скрытый youtube-плеер. Рендерится только во время активного раунда */}
       {room.currentRound && (
         <YoutubePlayer playback={room.currentRound.playback} />
       )}
