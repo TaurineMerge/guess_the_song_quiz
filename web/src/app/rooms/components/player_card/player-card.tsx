@@ -1,5 +1,5 @@
 import { DropdownMenu } from "radix-ui";
-import type { Player } from "../../types/room.types";
+import type { Player } from "shared/rooms/types/room.types";
 import styles from "./player-card.module.css";
 
 interface PlayerCardProps {

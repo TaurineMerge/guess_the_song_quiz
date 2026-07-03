@@ -4,7 +4,7 @@ import type {
   PlayerStatus,
   RoomState,
   RoundState,
-} from "../types/room.types";
+} from "shared/rooms/types/room.types";
 
 interface RoomStore {
   room: RoomState | null;

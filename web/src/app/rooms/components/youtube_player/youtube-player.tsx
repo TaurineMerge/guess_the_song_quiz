@@ -1,4 +1,4 @@
-import type { PlaybackState } from "../../types/room.types";
+import type { PlaybackState } from "shared/rooms/types/room.types";
 import styles from "./youtube-player.module.css";
 
 interface YoutubePlayerProps {
