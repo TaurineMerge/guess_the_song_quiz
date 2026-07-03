@@ -1,5 +1,6 @@
 import { type Socket } from "socket.io-client";
 import { useRoomStore } from "../store/room-store";
+import { roomServerEvents } from "shared/rooms/events/room-server-events";
 import type {
   RoomState,
   Player,
@@ -7,7 +8,7 @@ import type {
   RoundState,
   AnswerResultPayload,
   ScoreUpdatedPayload,
-} from "../types/room.types";
+} from "shared/rooms/types/room.types";
 
 export class RoomEventHandler {
   #socket: Socket;
@@ -20,54 +21,63 @@ export class RoomEventHandler {
   register() {
     const store = useRoomStore.getState();
 
-    this.#socket.on("room_state", (payload: RoomState) => {
+    this.#socket.on(roomServerEvents.ROOM_STATE, (payload: RoomState) => {
       store.setRoomState(payload);
     });
 
-    this.#socket.on("player_joined", (payload: Player) => {
+    this.#socket.on(roomServerEvents.PLAYER_JOINED, (payload: Player) => {
       store.addPlayer(payload);
     });
 
-    this.#socket.on("player_left", (payload: PlayerLeftPayload) => {
-      store.removePlayer(payload.playerId);
-    });
+    this.#socket.on(
+      roomServerEvents.PLAYER_LEFT,
+      (payload: PlayerLeftPayload) => {
+        store.removePlayer(payload.playerId);
+      },
+    );
 
-    this.#socket.on("round_started", (payload: RoundState) => {
+    this.#socket.on(roomServerEvents.ROUND_STARTED, (payload: RoundState) => {
       store.startRound(payload);
     });
 
-    this.#socket.on("answer_result", (payload: AnswerResultPayload) => {
-      store.setPlayerStatus(payload.playerId, payload.status);
-    });
+    this.#socket.on(
+      roomServerEvents.ANSWER_RESULT,
+      (payload: AnswerResultPayload) => {
+        store.setPlayerStatus(payload.playerId, payload.status);
+      },
+    );
 
-    this.#socket.on("score_updated", (payload: ScoreUpdatedPayload) => {
-      store.setPlayerScore(payload.playerId, payload.score);
-    });
+    this.#socket.on(
+      roomServerEvents.SCORE_UPDATED,
+      (payload: ScoreUpdatedPayload) => {
+        store.setPlayerScore(payload.playerId, payload.score);
+      },
+    );
 
-    this.#socket.on("game_started", () => {
+    this.#socket.on(roomServerEvents.GAME_STARTED, () => {
       store.setRoomStatus("active");
     });
 
-    this.#socket.on("game_finished", () => {
+    this.#socket.on(roomServerEvents.GAME_FINISHED, () => {
       store.setRoomStatus("finished");
     });
 
     // error: пока просто логируем. Полноценная обработка (тосты, реконнект-логика)
     // — отдельная задача, не относится к подключению событий комнаты.
-    this.#socket.on("error", (payload: unknown) => {
+    this.#socket.on(roomServerEvents.ERROR, (payload: unknown) => {
       console.error("[socket] server error:", payload);
     });
   }
 
   unregisterAll() {
-    this.#socket.off("room_state");
-    this.#socket.off("player_joined");
-    this.#socket.off("player_left");
-    this.#socket.off("round_started");
-    this.#socket.off("answer_result");
-    this.#socket.off("score_updated");
-    this.#socket.off("game_started");
-    this.#socket.off("game_finished");
-    this.#socket.off("error");
+    this.#socket.off(roomServerEvents.ROOM_STATE);
+    this.#socket.off(roomServerEvents.PLAYER_JOINED);
+    this.#socket.off(roomServerEvents.PLAYER_LEFT);
+    this.#socket.off(roomServerEvents.ROUND_STARTED);
+    this.#socket.off(roomServerEvents.ANSWER_RESULT);
+    this.#socket.off(roomServerEvents.SCORE_UPDATED);
+    this.#socket.off(roomServerEvents.GAME_STARTED);
+    this.#socket.off(roomServerEvents.GAME_FINISHED);
+    this.#socket.off(roomServerEvents.ERROR);
   }
 }
