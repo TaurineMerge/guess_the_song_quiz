@@ -11,17 +11,13 @@ import { socket } from "../../socket/client";
 import { roomClientEvents } from "shared/rooms/events/room-client-events";
 import styles from "./room-lobby.module.css";
 import { RoomEventHandler } from "../../socket/room-event-handler";
+import { useParams } from "react-router";
 
 export function RoomLobby() {
-  const room = useRoomStore((state) => state.room);
-  const setRoomState = useRoomStore((state) => state.setRoomState);
-  const currentUserId = useSessionStore((state) => state.currentUserId);
-  const setCurrentUserId = useSessionStore((state) => state.setCurrentUserId);
+  const { roomId } = useParams<{ roomId: string }>();
 
-  useEffect(() => {
-    setRoomState();
-    setCurrentUserId();
-  }, [setRoomState, setCurrentUserId]);
+  const room = useRoomStore((state) => state.room);
+  const currentUserId = useSessionStore((state) => state.currentUserId);
 
   useEffect(() => {
     socket.connect();
@@ -29,12 +25,12 @@ export function RoomLobby() {
     const handler = new RoomEventHandler(socket);
 
     socket.once("connect", () => {
-      socket.emit(roomClientEvents.JOIN_ROOM, { roomId: room.roomId });
+      socket.emit(roomClientEvents.JOIN_ROOM, { roomId });
       console.log("connected:", socket.id);
     });
 
     return () => {
-      socket.emit(roomClientEvents.LEAVE_ROOM);
+      socket.emit(roomClientEvents.LEAVE_ROOM, { roomId });
       handler.unregisterAll();
       socket.disconnect();
     };
