@@ -1,4 +1,4 @@
-export type PlayerStatus = "idle" | "answering" | "correct" | "wrong";
+export type PlayerStatus = "idle" | "correct" | "wrong";
 
 export type RoomStatus = "waiting" | "active" | "finished";
 
@@ -27,27 +27,36 @@ export interface PlaybackState {
   positionSeconds: number;
 }
 
-export interface RoundState {
+interface RoundDto {
   roundNumber: number;
-  // id игрока, который сейчас отвечает (buzz mode). null — никто не жмёт кнопку.
   answeringPlayerId: string | null;
   playback: PlaybackState;
 }
 
-export interface RoomState {
+export interface RoomDto {
   roomId: string;
   status: RoomStatus;
   players: Player[];
-  currentRound: RoundState | null;
+  currentRound: RoundDto | null;
 }
 
-// currentUserId — НЕ часть RoomState. RoomState приходит с сервера целиком
-// и одинаков для всех клиентов; а "кто я" — это локальная session-информация
-// (из auth), которая будет жить в отдельном auth/session store, а не в room store.
-// Здесь это просто заглушка для мока на этом шаге.
+export interface Room {
+  roomId: string;
+  status: RoomStatus;
+  players: Map<string, Player>;
+  currentRound: Round | null;
+}
+
+export interface Round {
+  roundNumber: number;
+  answeringPlayerId: string | null;
+  playback: PlaybackState;
+  answer: string;
+}
 
 export interface PlayerLeftPayload {
   playerId: string;
+  name: string;
 }
 
 export interface AnswerResultPayload {
@@ -59,5 +68,4 @@ export interface AnswerResultPayload {
 export interface ScoreUpdatedPayload {
   playerId: string;
   score: number;
-  // TODO
 }
