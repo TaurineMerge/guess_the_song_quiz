@@ -4,6 +4,7 @@ export const roomServerEvents = {
   PLAYER_LEFT: "player_left",
   ROUND_STARTED: "round_started",
   ANSWER_RESULT: "answer_result",
+  ANSWER_LOCK: "answer_lock",
   SCORE_UPDATED: "score_updated",
   GAME_STARTED: "game_started",
   GAME_FINISHED: "game_finished",
