@@ -1,0 +1,213 @@
+.root {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* — Левая колонка — */
+.brand {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--color-bg-page);
+  gap: 64px;
+}
+
+.brandInner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.title {
+  font-size: clamp(52px, 6vw, 80px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
+}
+
+.titleAccent {
+  /* Градиентный текст — signature element */
+  background: linear-gradient(
+    135deg,
+    var(--color-accent) 0%,
+    #a78bfa 50%,
+    #f472b6 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.description {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  max-width: 640px;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  margin-top: 8px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.featureDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent), #a78bfa);
+  flex-shrink: 0;
+}
+
+.privacy {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  opacity: 0.6;
+}
+
+.privacyLink {
+  color: var(--color-text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+
+.privacyLink:hover {
+  color: var(--color-text-primary);
+}
+
+/* — Разделитель — */
+.divider {
+  width: 1px;
+  background: var(--color-border-default);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Скользящий световой блик по разделителю */
+.divider::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-accent),
+    transparent
+  );
+  animation: slideDivider 4s ease-in-out infinite;
+}
+
+@keyframes slideDivider {
+  0% {
+    top: -40%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    top: 140%;
+    opacity: 0;
+  }
+}
+
+/* — Правая колонка — */
+.form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 56px;
+  background: var(--color-bg-page);
+}
+
+/* — Адаптив — */
+@media (max-width: 768px) {
+  .root {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1px auto;
+  }
+
+  .brand {
+    padding: 48px 24px 40px;
+    gap: 32px;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .divider::after {
+    top: 0;
+    left: -40%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-accent),
+      transparent
+    );
+    animation: slideDividerH 4s ease-in-out infinite;
+  }
+
+  @keyframes slideDividerH {
+    0% {
+      left: -40%;
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      left: 140%;
+      opacity: 0;
+    }
+  }
+
+  .form {
+    padding: 40px 24px 48px;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .divider::after {
+    animation: none;
+    opacity: 0.4;
+    top: 30%;
+    height: 40%;
+  }
+}
