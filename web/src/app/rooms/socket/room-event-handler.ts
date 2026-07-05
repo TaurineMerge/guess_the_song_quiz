@@ -2,10 +2,10 @@ import { type Socket } from "socket.io-client";
 import { useRoomStore } from "../store/room-store";
 import { roomServerEvents } from "shared/rooms/events/room-server-events";
 import type {
-  RoomState,
+  RoomDto,
   Player,
   PlayerLeftPayload,
-  RoundState,
+  Round,
   AnswerResultPayload,
   ScoreUpdatedPayload,
 } from "shared/rooms/types/room.types";
@@ -21,7 +21,7 @@ export class RoomEventHandler {
   register() {
     const store = useRoomStore.getState();
 
-    this.#socket.on(roomServerEvents.ROOM_STATE, (payload: RoomState) => {
+    this.#socket.on(roomServerEvents.ROOM_STATE, (payload: RoomDto) => {
       store.setRoomState(payload);
     });
 
@@ -36,7 +36,7 @@ export class RoomEventHandler {
       },
     );
 
-    this.#socket.on(roomServerEvents.ROUND_STARTED, (payload: RoundState) => {
+    this.#socket.on(roomServerEvents.ROUND_STARTED, (payload: Round) => {
       store.startRound(payload);
     });
 
