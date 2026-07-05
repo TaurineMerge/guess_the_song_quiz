@@ -2,22 +2,23 @@ import { create } from "zustand";
 import type {
   Player,
   PlayerStatus,
-  RoomState,
-  RoundState,
+  RoomDto,
+  RoomStatus,
+  Round,
 } from "shared/rooms/types/room.types";
 
 interface RoomStore {
-  room: RoomState | null;
+  room: RoomDto | null;
 
   // room_state: полная замена стейта (инициализация комнаты, reconnect)
-  setRoomState: (room: RoomState) => void;
+  setRoomState: (room: RoomDto) => void;
 
   // player_joined / player_left
   addPlayer: (player: Player) => void;
   removePlayer: (playerId: string) => void;
 
   // round_started
-  startRound: (round: RoundState) => void;
+  startRound: (round: Round) => void;
 
   // answer_result: сервер сообщает, кто ответил и правильно ли
   setPlayerStatus: (playerId: string, status: PlayerStatus) => void;
@@ -26,7 +27,7 @@ interface RoomStore {
   setPlayerScore: (playerId: string, score: number) => void;
 
   // game_started / game_finished
-  setRoomStatus: (status: RoomState["status"]) => void;
+  setRoomStatus: (status: RoomStatus) => void;
 
   // buzz mode: кто-то нажал кнопку ответа / отпустил её
   setAnsweringPlayer: (playerId: string | null) => void;
