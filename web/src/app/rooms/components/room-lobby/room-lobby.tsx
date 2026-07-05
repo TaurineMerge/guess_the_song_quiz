@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AlertDialog } from "radix-ui";
 import { useRoomStore } from "../../store/room-store";
-import { useSessionStore } from "../../store/session-store";
+import { useSessionStore } from "../../../auth/store/session-store";
 import { PlayerCard } from "../player_card/player-card";
 import { Visualizer } from "../visualizer/visualizer";
 import { AnswerButton } from "../answer_button/answer-button";
@@ -20,6 +20,12 @@ export function RoomLobby() {
   const currentUserId = useSessionStore((state) => state.currentUserId);
 
   useEffect(() => {
+    const token = localStorage.getItem("access_token");
+
+    socket.auth = {
+      token,
+    };
+
     socket.connect();
 
     const handler = new RoomEventHandler(socket);
